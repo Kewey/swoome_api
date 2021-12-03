@@ -17,16 +17,13 @@ services:
     command: npm run start:dev
 
   postgres:
-    image: postgres:13
-    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+
+  adminer:
+    image: adminer
     restart: always
     ports:
-      - 5432:5432
-    env_file:
-      - .env
-    volumes:
-      - postgres:/var/lib/postgresql/data
-
-volumes:
-  postgres:
-    name: nest-db
+      - 8080:8080
