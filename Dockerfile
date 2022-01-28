@@ -1,15 +1,26 @@
-FROM node:alpine
+FROM node:14 AS builder
 
-RUN mkdir /home/node/app
-WORKDIR /home/node/app
-COPY . /home/node/app
-RUN npm install --production
+# Create app directory
+WORKDIR /app
 
-# CMD [ "npm", "start" ]
-CMD ["node", "dist/server.js"]
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install app dependencies
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+FROM node:14
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
 EXPOSE 3000
-
-# Install development packages if NODE_ENV is set to "development"
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
-RUN if [ "$NODE_ENV" == "development" ]; then npm install ; fi
+# 👇 new migrate and start app script
+CMD [  "npm", "run", "start:migrate:prod" ]
