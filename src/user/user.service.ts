@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './../prisma.service';
-import { User, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { IsEmail, IsString, IsNotEmpty, MinLength } from 'class-validator';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -29,11 +29,11 @@ export class UserService {
       where: { id: id },
     });
   }
-  async findOneByEmail(email: string) {
+  /*async findOneByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email: email },
     });
-  }
+  }*/
   async update(id: string, data: UpdateUserDto): Promise<User> {
     return this.prisma.user.update({
       where: { id: id },

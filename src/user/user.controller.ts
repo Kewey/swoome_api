@@ -7,19 +7,25 @@ import {
   Put,
   Param,
   Delete,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User, Prisma } from '@prisma/client';
+import { User } from './entities/user.entity';
+import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('user')
+@UseInterceptors(ClassSerializerInterceptor)
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() data: CreateUserDto): Promise<User> {
-    return this.userService.create(data);
+  async create(@Body() data: CreateUserDto): Promise<any> {
+    const newUser = await this.userService.create(data);
+    const { password, ...newUserWithoutPwd } = newUser;
+    return newUserWithoutPwd;
   }
 
   @Get()
@@ -27,15 +33,15 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  /*@Get(':id')
+  @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
     return this.userService.findOne(id);
-  }*/
+  }
 
-  @Get(':email')
+  /*@Get(':email')
   async findOneByEmail(@Param('email') email: string): Promise<User> {
     return this.userService.findOneByEmail(email);
-  }
+  }*/
 
   @Put(':id')
   async update(
