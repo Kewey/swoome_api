@@ -29,11 +29,12 @@ export class UserService {
       where: { id: id },
     });
   }
-  /*async findOneByEmail(email: string) {
+  async findOneByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email: email },
     });
-  }*/
+  }
+
   async update(id: string, data: UpdateUserDto): Promise<User> {
     return this.prisma.user.update({
       where: { id: id },
