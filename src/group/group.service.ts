@@ -8,9 +8,23 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 export class GroupService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateGroupDto): Promise<Group> {
+  async create(data: CreateGroupDto, user): Promise<Group> {
     return this.prisma.group.create({
-      data,
+      data: {
+        ...data,
+        members: {
+          create: [
+            {
+              assignedAt: new Date(),
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          ],
+        },
+      },
     });
   }
 
